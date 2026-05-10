@@ -1,0 +1,90 @@
+// 4.1 activity manifest.xml
+<activity android:name=".ShowActivity"/>
+
+// 4.2 MainActivity.java
+package com.example.myapp4;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Spinner spinner = findViewById(R.id.spinner);
+        String[] subjects = {"English", "Maths", "Physics", "Chemistry"};
+        spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, subjects));
+
+        EditText username = findViewById(R.id.username);
+        RadioButton male = findViewById(R.id.male);
+        RadioButton female = findViewById(R.id.female);
+        CheckBox cb1 = findViewById(R.id.checkbox1);
+        CheckBox cb2 = findViewById(R.id.checkbox2);
+        CheckBox cb3 = findViewById(R.id.checkbox3);
+
+        findViewById(R.id.submit).setOnClickListener( v ->{
+            String name = username.getText().toString();
+            String subject = spinner.getSelectedItem().toString();
+            String gender =male.isChecked()? "Male" : "Female";
+
+            //get Qualifier
+
+            String qual = "";
+            if(cb1.isChecked()) qual += "10th Pass";
+            if(cb2.isChecked()) qual += "12th Pass";
+            if(cb3.isChecked()) qual += "Graduated";
+
+            Intent intent = new Intent(this, ShowActivity.class);
+            intent.putExtra("name", name);
+            intent.putExtra("subject", subject);
+            intent.putExtra("gender", gender);
+            intent.putExtra("qual", qual);
+            startActivity(intent);
+
+        });
+
+    }
+}
+
+//4.3 ShowActivity.java
+package com.example.myapp4;
+
+import android.os.Bundle;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ShowActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show);
+
+        EditText name = findViewById(R.id.username3);
+        EditText subject = findViewById(R.id.subject2);
+        EditText gender = findViewById(R.id.gender2);
+        EditText qual = findViewById(R.id.qualification2);
+
+        name.setText(getIntent().getStringExtra("name"));
+        subject.setText(getIntent().getStringExtra("subject"));
+        gender.setText(getIntent().getStringExtra("gender"));
+        qual.setText(getIntent().getStringExtra("qual"));
+
+    }
+
+}
