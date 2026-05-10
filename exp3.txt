@@ -1,0 +1,148 @@
+//3.1 sqlite  DatabaseHandler.java
+package com.example.myapplication3;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+    public DatabaseHelper(Context context) {
+        super(context, "UserDB", null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE users (username TEXT PRIMARY KEY, password TEXT)");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+
+    public boolean registerUser(String u, String p) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("username", u);
+        v.put("password", p);
+        return db.insert("users", null, v) != -1;
+    }
+
+    public boolean loginUser(String u, String p) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM users WHERE username=? AND password=?",
+                new String[]{u, p}).getCount() > 0;
+    }
+}
+
+
+//3.2  main_activity.java
+package com.example.myapplication3;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        DatabaseHelper db = new DatabaseHelper(this);
+        EditText user = findViewById(R.id.user);
+        EditText pass1 = findViewById(R.id.password1);
+        EditText pass2 = findViewById(R.id.password2);
+
+        findViewById(R.id.signup).setOnClickListener(v -> {
+            String u = user.getText().toString().trim();
+            String p1 = pass1.getText().toString().trim();
+            String p2 = pass2.getText().toString().trim();
+
+            if (!p1.equals(p2))
+                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+            else if (db.registerUser(u, p1))
+                startActivity(new Intent(this, homeactivity.class));
+            else
+                Toast.makeText(this, "Username already exists!", Toast.LENGTH_SHORT).show();
+        });
+
+        findViewById(R.id.signin).setOnClickListener(v ->
+                startActivity(new Intent(this, signinactivity.class))
+        );
+    }
+}
+
+// 3.3  signin activity
+
+package com.example.myapplication3;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class signinactivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.signinpage);
+
+        DatabaseHelper db = new DatabaseHelper(this);
+        EditText user = findViewById(R.id.userold);
+        EditText pass = findViewById(R.id.passwordold);
+
+        findViewById(R.id.signinold).setOnClickListener(v -> {
+            String u = user.getText().toString().trim();
+            String p = pass.getText().toString().trim();
+
+            if (db.loginUser(u, p)) {
+                Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, homeactivity.class));
+            } else {
+                Toast.makeText(this, "Invalid credentials!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+}
+
+//3.4 homepage
+
+package com.example.myapplication3;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class homeactivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.homepage);
+
+        findViewById(R.id.signout).setOnClickListener(v -> {
+            Toast.makeText(this, "Signed out!", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
+    }
+}
+
+//3.5 ActivityManifest.mxl
+//<after activity/>
+
+ <activity android:name=".signinactivity"/>
+ <activity android:name=".homeactivity"/>
+<applicaion/>
+
+
