@@ -1,0 +1,222 @@
+//5.1 activity_main.xml[layout]
+1. button: simple dialog button
+2. button:custom dialog
+3. plain text: Long press items
+4. listview
+
+//5.2 custom_dialog.xml[layout]
+1. text: inputType: textPersonName
+2. email: inputType: textemail...
+
+5.3 res->menu(2 times )(create new Android Resource Directory)
+5.3.1 main_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_search"
+        android:title="Search"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_about"
+        android:title="About"
+        app:showAsAction="never"/>
+
+</menu>
+
+5.3.2 context_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_edit" android:title="Edit"/>
+    <item android:id="@+id/action_delete" android:title="Delete"/>
+    <item android:id="@+id/action_share" android:title="Share"/>
+</menu>
+
+5.4 MainActivity.java
+package com.example.myapp5;
+
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // ListView + Context Menu
+        ListView lv = findViewById(R.id.listview);
+        lv.setAdapter(new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1,
+                new String[]{"Item 1", "Item 2", "Item 3", "Item 4"}));
+        registerForContextMenu(lv);
+
+        // Simple Dialog
+        findViewById(R.id.dialogbutton).setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                        .setTitle("Simple Dialog")
+                        .setMessage("This is a simple dialog")
+                        .setPositiveButton("OK", null)
+                        .setNegativeButton("Cancel", null)
+                        .show());
+
+        // Custom Dialog
+        findViewById(R.id.custombutton).setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                        .setTitle("Custom Dialog")
+                        .setView(getLayoutInflater().inflate(R.layout.custom_dialog, null))
+                        .setPositiveButton("Submit", null)
+                        .setNegativeButton("Cancel", null)
+                        .show());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo info) {
+        super.onCreateContextMenu(menu, v, info);
+        getMenuInflater().inflate(R.menu.context_menu , menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+}
+
+
+5.1 activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/dialogbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="57dp"
+        android:layout_marginBottom="21dp"
+        android:text="Show Simple Dialog"
+        app:layout_constraintBottom_toTopOf="@+id/custombutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/custombutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="42dp"
+        android:text="Show Custom Dialog"
+        app:layout_constraintBottom_toTopOf="@+id/longpresstext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogbutton" />
+
+    <TextView
+        android:id="@+id/longpresstext"
+        android:layout_width="261dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="56dp"
+        android:text="Long Press Items"
+        app:layout_constraintBottom_toTopOf="@+id/listview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/custombutton" />
+
+    <ListView
+        android:id="@+id/listview"
+        android:layout_width="385dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="26dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/longpresstext" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+5.2 custom_dialog
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="311dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="135dp"
+        android:layout_marginBottom="18dp"
+        android:ems="10"
+        android:hint="Enter your name"
+        android:inputType="textPersonName"
+        android:text="Name"
+        app:layout_constraintBottom_toTopOf="@+id/emailtext"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/costumtext"
+        android:layout_width="296dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="78dp"
+        android:text="This is Custom Dialog Box"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/emailtext"
+        android:layout_width="286dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginBottom="474dp"
+        android:ems="10"
+        android:hint="Enter your name"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+</androidx.constraintlayout.widget.ConstraintLayout>
