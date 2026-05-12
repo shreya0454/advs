@@ -4,8 +4,6 @@ Add name: MyApplication2
 lang => JAVA, no kotlin
 Layout-> Empty Activity View
 
-
-
 1. MAIN-> GRADLE :
 
 plugins {
@@ -44,10 +42,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
-
-
-
 
 dependencies {
     implementation(libs.appcompat)
