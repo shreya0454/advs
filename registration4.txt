@@ -1,0 +1,334 @@
+// 4.1 activity manifest.xml
+<activity android:name=".ShowActivity"/>
+
+// 4.2 MainActivity.java
+package com.example.myapp4;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Spinner spinner = findViewById(R.id.spinner);
+        String[] subjects = {"English", "Maths", "Physics", "Chemistry"};
+        spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, subjects));
+
+        EditText username = findViewById(R.id.username);
+        RadioButton male = findViewById(R.id.male);
+        RadioButton female = findViewById(R.id.female);
+        CheckBox cb1 = findViewById(R.id.checkbox1);
+        CheckBox cb2 = findViewById(R.id.checkbox2);
+        CheckBox cb3 = findViewById(R.id.checkbox3);
+
+        findViewById(R.id.submit).setOnClickListener( v ->{
+            String name = username.getText().toString();
+            String subject = spinner.getSelectedItem().toString();
+            String gender =male.isChecked()? "Male" : "Female";
+
+            //get Qualifier
+
+            String qual = "";
+            if(cb1.isChecked()) qual += "10th Pass";
+            if(cb2.isChecked()) qual += "12th Pass";
+            if(cb3.isChecked()) qual += "Graduated";
+
+            Intent intent = new Intent(this, ShowActivity.class);
+            intent.putExtra("name", name);
+            intent.putExtra("subject", subject);
+            intent.putExtra("gender", gender);
+            intent.putExtra("qual", qual);
+            startActivity(intent);
+
+        });
+
+    }
+}
+
+//4.3 ShowActivity.java
+package com.example.myapp4;
+
+import android.os.Bundle;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ShowActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_show);
+
+        EditText name = findViewById(R.id.username3);
+        EditText subject = findViewById(R.id.subject2);
+        EditText gender = findViewById(R.id.gender2);
+        EditText qual = findViewById(R.id.qualification2);
+
+        name.setText(getIntent().getStringExtra("name"));
+        subject.setText(getIntent().getStringExtra("subject"));
+        gender.setText(getIntent().getStringExtra("gender"));
+        qual.setText(getIntent().getStringExtra("qual"));
+
+    }
+
+}
+
+
+4.4 activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/Info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="34dp"
+        android:text="Seat No.: B400050080"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:text="Name :"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/username" />
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="259dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginBottom="23dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Enter Name"
+        app:layout_constraintBottom_toTopOf="@+id/subject"
+        app:layout_constraintStart_toEndOf="@+id/name" />
+
+    <TextView
+        android:id="@+id/subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="148dp"
+        android:text="Select Subject"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="255dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="9dp"
+        android:layout_marginTop="38dp"
+        android:layout_marginBottom="30dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toTopOf="@+id/gender"
+        app:layout_constraintStart_toStartOf="@+id/subject"
+        app:layout_constraintTop_toTopOf="@+id/subject" />
+
+    <TextView
+        android:id="@+id/gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="26dp"
+        android:layout_marginBottom="20dp"
+        android:text="Select Gender"
+        app:layout_constraintBottom_toTopOf="@+id/male"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <RadioButton
+        android:id="@+id/male"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="9dp"
+        android:text="Male"
+        app:layout_constraintBottom_toTopOf="@+id/qualification"
+        app:layout_constraintStart_toStartOf="@+id/qualification" />
+
+    <RadioButton
+        android:id="@+id/female"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="19dp"
+        android:layout_marginBottom="4dp"
+        android:text="Female"
+        app:layout_constraintBottom_toTopOf="@+id/qualification"
+        app:layout_constraintStart_toEndOf="@+id/male" />
+
+    <TextView
+        android:id="@+id/qualification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="26dp"
+        android:text="Select Qualification"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/checkbox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="22dp"
+        android:text="10th PASS"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qualification" />
+
+    <CheckBox
+        android:id="@+id/checkbox2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="7dp"
+        android:text="12th PASS"
+        app:layout_constraintBottom_toTopOf="@+id/checkbox3"
+        app:layout_constraintStart_toStartOf="@+id/checkbox1" />
+
+    <CheckBox
+        android:id="@+id/checkbox3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="3dp"
+        android:text="Graduated"
+        app:layout_constraintEnd_toEndOf="@+id/checkbox2"
+        app:layout_constraintTop_toBottomOf="@+id/checkbox1" />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="150dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="22dp"
+        android:text="Submit"
+        app:layout_constraintEnd_toEndOf="@+id/spinner"
+        app:layout_constraintStart_toStartOf="@+id/spinner"
+        app:layout_constraintTop_toBottomOf="@+id/checkbox3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+4.5 show_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="224dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="15dp"
+        android:text="Seat No.: B400050080"
+        app:layout_constraintBottom_toTopOf="@+id/username3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/username2"
+        android:layout_width="181dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="5dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text=" Name :"
+        app:layout_constraintBottom_toBottomOf="@+id/username3"
+        app:layout_constraintEnd_toStartOf="@+id/username3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/username3"
+        android:layout_width="181dp"
+        android:layout_height="58dp"
+        android:layout_marginEnd="73dp"
+        android:layout_marginBottom="42dp"
+        android:ems="10"
+        android:hint="Show Name"
+        android:inputType="textShortMessage"
+        app:layout_constraintBottom_toTopOf="@+id/subject2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/username2"
+        app:layout_constraintTop_toBottomOf="@+id/info" />
+
+    <EditText
+        android:id="@+id/subject2"
+        android:layout_width="265dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="32dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Subject :"
+        app:layout_constraintBottom_toTopOf="@+id/gender2"
+        app:layout_constraintEnd_toEndOf="@+id/qualification2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/qualification2"
+        app:layout_constraintTop_toBottomOf="@+id/username3" />
+
+    <EditText
+        android:id="@+id/gender2"
+        android:layout_width="229dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="50dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Gender :"
+        app:layout_constraintBottom_toTopOf="@+id/qualification2"
+        app:layout_constraintEnd_toEndOf="@+id/subject2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/subject2" />
+
+    <EditText
+        android:id="@+id/qualification2"
+        android:layout_width="209dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="334dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Qualification :"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gender2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

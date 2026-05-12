@@ -1,0 +1,197 @@
+8.1. drawables add ic_next,play,pause,Previous buttons
+
+8.2 res->raw folder-> add 2 song- song1,song2
+
+8.3 MainActivity.java
+package com.example.myapp8;
+
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    MediaPlayer mediaPlayer;
+    SeekBar seekbar;
+    TextView text1;
+    Handler handler = new Handler();
+
+    int[] songs = {R.raw.song1, R.raw.song2};
+    String[] songNames = {"Song 1", "Song 2"};
+    int currentIndex = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        seekbar  = findViewById(R.id.seekbar);
+        text1    = findViewById(R.id.text1);
+        ImageButton play  = findViewById(R.id.playbutton);
+        ImageButton pause = findViewById(R.id.pausebutton);
+        ImageButton next  = findViewById(R.id.nextbutton);
+        ImageButton prev  = findViewById(R.id.prevbutton);
+
+        // Load first song
+        loadSong(currentIndex);
+
+        // Play
+        play.setOnClickListener(v -> mediaPlayer.start());
+
+        // Pause
+        pause.setOnClickListener(v -> mediaPlayer.pause());
+
+        // Next
+        next.setOnClickListener(v -> {
+            currentIndex = (currentIndex + 1) % songs.length;
+            loadSong(currentIndex);
+        });
+
+        // Previous
+        prev.setOnClickListener(v -> {
+            currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+            loadSong(currentIndex);
+        });
+
+        // SeekBar
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar s, int progress, boolean fromUser) {
+                if (fromUser) mediaPlayer.seekTo(progress);
+            }
+            @Override public void onStartTrackingTouch(SeekBar s) {}
+            @Override public void onStopTrackingTouch(SeekBar s) {}
+        });
+    }
+
+    void loadSong(int index) {
+        if (mediaPlayer != null) mediaPlayer.release();
+        mediaPlayer = MediaPlayer.create(this, songs[index]);
+        seekbar.setMax(mediaPlayer.getDuration());
+        text1.setText(songNames[index]); // update song name
+        mediaPlayer.start();
+        updateSeekBar();
+    }
+
+    void updateSeekBar() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null)
+                    seekbar.setProgress(mediaPlayer.getCurrentPosition());
+                handler.postDelayed(this, 1000);
+            }
+        }, 1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) mediaPlayer.release();
+        handler.removeCallbacksAndMessages(null);
+    }
+}
+
+8.4 activity_main.xml
+via button add 4 buttons, image, seekbar
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/image1"
+        android:layout_width="343dp"
+        android:layout_height="239dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="106dp"
+        app:layout_constraintBottom_toTopOf="@+id/text1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <ImageButton
+        android:id="@+id/playbutton"
+        android:layout_width="49dp"
+        android:layout_height="89dp"
+        android:layout_marginStart="105dp"
+        android:layout_marginTop="588dp"
+        android:contentDescription="play"
+        app:layout_constraintEnd_toStartOf="@+id/pausebutton"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_play" />
+
+    <ImageButton
+        android:id="@+id/pausebutton"
+        android:layout_width="0dp"
+        android:layout_height="97dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="86dp"
+        android:layout_marginBottom="54dp"
+        android:contentDescription="pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/nextbutton"
+        app:layout_constraintStart_toEndOf="@+id/prevbutton"
+        app:layout_constraintTop_toBottomOf="@+id/seekbar"
+        app:layout_constraintVertical_bias="0.545"
+        app:srcCompat="@drawable/ic_pause" />
+
+    <ImageButton
+        android:id="@+id/prevbutton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="139dp"
+        android:layout_marginBottom="54dp"
+        android:contentDescription="prev"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/pausebutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekbar"
+        app:srcCompat="@drawable/ic_prev" />
+
+    <ImageButton
+        android:id="@+id/nextbutton"
+        android:layout_width="79dp"
+        android:layout_height="68dp"
+        android:layout_marginBottom="100dp"
+        android:contentDescription="next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text1"
+        app:srcCompat="@drawable/ic_next" />
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="323dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="365dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="23dp"
+        app:layout_constraintBottom_toTopOf="@+id/prevbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="204dp"
+        android:text="Song1"
+        app:layout_constraintBottom_toTopOf="@+id/nextbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image1" />
+</androidx.constraintlayout.widget.ConstraintLayout>

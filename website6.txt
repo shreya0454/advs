@@ -1,0 +1,131 @@
+6.1 ActivityManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+//this to add
+    <!-- THIS LINE IS IMPORTANT -->
+    <uses-permission android:name="android.permission.INTERNET" />
+//end
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Myapp6">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+6.2 MainActivity.java
+package com.example.myapp6;
+
+import android.os.Bundle;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.EditText;
+
+import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText urlEditText;
+    WebView webView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        webView = findViewById(R.id.webview);
+        urlEditText = findViewById(R.id.website);
+
+        //enable js
+        webView.getSettings().getJavaScriptEnabled();
+
+        //open link
+        webView.setWebViewClient(new WebViewClient());
+
+        //load website
+       webView.loadUrl("https://www.google.com");
+
+        //Load URL when presses
+        // Load URL when user presses Enter
+        urlEditText.setOnEditorActionListener((v, actionId, event) -> {
+            String url = urlEditText.getText().toString().trim();
+            if (!url.startsWith("http")) url = "https://" + url;
+            webView.loadUrl(url);
+            return true;
+        });
+    } // onCreate ends here
+}   // class ends here
+
+
+
+6.3 main_activity.xml
+1. textView[text]: inputType: textUri
+2. webView (no inputType, only id)
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="184dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginBottom="38dp"
+        android:text="Enter Website Below"
+        app:layout_constraintBottom_toTopOf="@+id/website"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/website"
+        android:layout_width="307dp"
+        android:layout_height="72dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="128dp"
+        android:layout_marginBottom="1dp"
+        android:ems="10"
+        android:hint="Enter link here"
+        android:inputType="textUri"
+        app:layout_constraintBottom_toTopOf="@+id/webview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/website" />
+</androidx.constraintlayout.widget.ConstraintLayout>

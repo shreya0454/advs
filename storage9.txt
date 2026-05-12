@@ -1,0 +1,189 @@
+9.1 MainActivity.java
+package com.example.myapp9;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText dataInput, fileNameInput;
+    RadioButton internalRadio, externalRadio;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        dataInput = findViewById(R.id.datatext);
+        fileNameInput = findViewById(R.id.filenametext);
+        internalRadio = findViewById(R.id.internalButton);
+        externalRadio = findViewById(R.id.externalButton);
+
+        Toast.makeText(this, "App Started", Toast.LENGTH_SHORT).show();
+    }
+
+    public void saveData(View view) {
+        String file = fileNameInput.getText().toString();
+        String data = dataInput.getText().toString();
+
+        if (file.isEmpty() || data.isEmpty()) {
+            toast("Enter filename and data");
+            return;
+        }
+
+        try {
+            OutputStream os;
+
+            if (internalRadio.isChecked())
+                os = openFileOutput(file, Context.MODE_PRIVATE);
+            else if (externalRadio.isChecked())
+                os = new FileOutputStream(new File(getExternalFilesDir(null), file));
+            else {
+                toast("Select Internal or External");
+                return;
+            }
+
+            os.write(data.getBytes(StandardCharsets.UTF_8));
+            os.close();
+            toast("Saved Successfully");
+
+        } catch (Exception e) {
+            toast("Error: " + e.getMessage());
+        }
+    }
+
+    public void loadData(View view) {
+        String file = fileNameInput.getText().toString();
+
+        if (file.isEmpty()) {
+            toast("Enter filename");
+            return;
+        }
+
+        try {
+            InputStream is;
+
+            if (internalRadio.isChecked())
+                is = openFileInput(file);
+            else if (externalRadio.isChecked())
+                is = new FileInputStream(new File(getExternalFilesDir(null), file));
+            else {
+                toast("Select Internal or External");
+                return;
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null)
+                sb.append(line).append("\n");
+
+            br.close();
+            dataInput.setText(sb.toString().trim());
+            toast("Loaded Successfully");
+
+        } catch (Exception e) {
+            toast("File not found");
+        }
+    }
+
+    void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+}
+
+9.2 activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Data Storage App"
+        android:textSize="22sp"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/filenametext"
+        android:layout_width="370dp"
+        android:layout_height="80dp"
+        android:hint="Enter File Name" />
+
+    <EditText
+        android:id="@+id/datatext"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:hint="Enter Data"
+        android:gravity="top"
+        android:inputType="textMultiLine"/>
+
+    <RadioButton
+        android:id="@+id/internalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Internal Storage"/>
+
+    <RadioButton
+        android:id="@+id/externalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="External Storage"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SAVE"
+        android:onClick="saveData"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LOAD"
+        android:onClick="loadData"/>
+
+</LinearLayout>
+
+9.3 AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+<!--&lt;!&ndash; added permission&ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>-->
+<!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>-->
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Myapp9">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,279 @@
+MyApp7New/
+│
+├── app/
+│   └── src/
+│       └── main/
+│           │
+│           ├── java/com/example/myapp7new/
+│           │   ├── MainActivity.java
+│           │   └── ImageSliderAdapter.java
+│           │
+│           ├── res/
+│           │   │
+│           │   ├── layout/
+│           │   │   ├── activity_main.xml
+│           │   │   └── item_image_slider.xml
+│           │   │
+│           │   ├── drawable/
+│           │   │   ├── image1.png
+│           │   │   ├── image2.png
+│           │   │   ├── image3.png
+│           │   │   ├── left_arrow.png  [new-vector asset- search arrow]
+│           │   │   ├── right_arrow.png
+                    ├── tab_selector.xml   
+                    ├── tab_selected.xml   
+                    └── tab_unselected.xml 
+│           │   │
+│           │   └── values/
+│           │       ├── strings.xml
+│           │       └── themes.xml
+│           │
+│           └── AndroidManifest.xml
+│
+└── Gradle Scripts/
+    ├── build.gradle (Module: app)
+    └── build.gradle (Project)
+
+7.1  MainActivity.java
+package com.example.myapp7new;
+
+import android.os.Bundle;
+import android.widget.ImageButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
+        ImageButton prev = findViewById(R.id.leftbutton);
+        ImageButton next = findViewById(R.id.rightbutton);
+        TabLayout tabs = findViewById(R.id.tabIndicator1);
+
+        int[] images = {R.drawable.image1, R.drawable.image2, R.drawable.image3};
+
+        viewPager.setAdapter(new ImageSliderAdapter(images));
+
+        new TabLayoutMediator(tabs, viewPager, (tab, pos) -> {}).attach();
+
+        prev.setOnClickListener(v ->
+                viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true)
+        );
+
+        next.setOnClickListener(v ->
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true)
+        );
+    }
+}
+
+7.2 ImageSliderAdapter
+package com.example.myapp7new;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class ImageSliderAdapter extends RecyclerView.Adapter<ImageSliderAdapter.Holder> {
+
+    int[] images;
+
+    public ImageSliderAdapter(int[] images) {
+        this.images = images;
+    }
+
+    @NonNull
+    @Override
+    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_image_slider, parent, false);
+        return new Holder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull Holder holder, int position) {
+        holder.img.setImageResource(images[position]);
+    }
+
+    @Override
+    public int getItemCount() {
+        return images.length;
+    }
+
+    static class Holder extends RecyclerView.ViewHolder {
+        ImageView img;
+
+        Holder(View itemView) {
+            super(itemView);
+            img = itemView.findViewById(R.id.imageSlider);
+        }
+    }
+}
+
+7.3 tab_selected
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#707070"/>
+    <size android:width="8dp" android:height="8dp"/>
+</shape>
+
+7.4 tab_unselected
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#A0A0A0"/>
+    <size android:width="8dp" android:height="8dp"/>
+</shape>
+
+
+7.5 tab_selector
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true"
+        android:drawable="@drawable/tab_selected"/>
+    <item android:drawable="@drawable/tab_unselected"/>
+</selector>
+
+7.6 activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Left Button -->
+
+    <!-- Right Button -->
+
+    <!-- ViewPager -->
+
+    <ImageButton
+        android:id="@+id/leftbutton"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:contentDescription="Previous"
+        app:layout_constraintBottom_toBottomOf="@+id/rightbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rightbutton"
+        app:srcCompat="@drawable/left_arrow" />
+
+    <ImageButton
+        android:id="@+id/rightbutton"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="179dp"
+        android:contentDescription="Next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewPager"
+        app:srcCompat="@drawable/right_arrow" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="281dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="58dp"
+        android:layout_marginBottom="193dp"
+        app:layout_constraintBottom_toTopOf="@+id/tabIndicator1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabIndicator1"
+        android:layout_width="192dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="120dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="88dp"
+        android:contentDescription="indicator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.211"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/tab_selector"
+        app:tabIndicatorColor="@android:color/transparent"
+        app:tabIndicatorHeight="0dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+7.7 item_image_slider
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="8dp">
+
+    <ImageView
+        android:id="@+id/imageSlider"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="Slider Image"/>
+
+</androidx.cardview.widget.CardView>
+
+7.8 AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Myapp7new">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+7.9 build.gradle.kts
+...
+..
+dependencies {
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.activity)
+    implementation(libs.constraintlayout)
+    implementation(libs.viewpager2)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+
+//    added below
+    implementation("com.google.android.material:material:1.12.0")
+}
